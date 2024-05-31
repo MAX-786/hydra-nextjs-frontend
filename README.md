@@ -20,6 +20,12 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Setup Plone Backend
+
+Simply run a plone backend using docker container: [Checkout the Plone 6 doc](https://6.docs.plone.org/install/containers/images/backend.html)
+
+Add a new Blogs page at home and add some blogs in it.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
