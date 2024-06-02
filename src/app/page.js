@@ -1,18 +1,18 @@
 // src/app/page.js
-import Link from 'next/link';
-import axios from 'axios';
-import { notFound } from 'next/navigation';
+import Link from "next/link";
+import axios from "axios";
+import { notFound } from "next/navigation";
 
 async function fetchBlogs() {
   try {
-    const res = await axios.get('http://localhost:8080/Plone/++api++/blogs');
-    return res.data.items.map(item => ({
+    const res = await axios.get("http://localhost:8080/Plone/++api++/blogs");
+    return res.data.items.map((item) => ({
       id: item.id,
       title: item.title,
-      url: item['@id'],
+      url: item["@id"],
     }));
   } catch (error) {
-    console.error('Error fetching blogs:', error);
+    console.error("Error fetching blogs:", error);
     return null;
   }
 }
@@ -26,12 +26,12 @@ export default async function Home() {
   function getEndpoint(url) {
     const urlObj = new URL(url);
     const path = urlObj.pathname;
-    const parts = path.split('/');
+    const parts = path.split("/");
     return parts[parts.length - 1];
   }
   return (
     <div className="home">
-      <h1 className="home-title">Blogs</h1>
+      <h1 className="home-title">Home</h1>
       <ul className="blog-list">
         {blogs.map((blog) => (
           <li key={blog.id} className="blog-list-item">
