@@ -8,7 +8,6 @@ async function fetchBlog(slug) {
     return {
       id: res.data.id,
       title: res.data.title,
-      text: res.data.text,
     };
   } catch (error) {
     console.error('Error fetching blog:', error);

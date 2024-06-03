@@ -33,8 +33,8 @@ export default async function Home() {
     <div className="home">
       <h1 className="home-title">Blogs</h1>
       <ul className="blog-list">
-        {blogs.map((blog) => (
-          <li key={blog.id} className="blog-list-item">
+        {blogs.map((blog,index) => (
+          <li key={index} className="blog-list-item">
             <Link href={`blogs/${getEndpoint(blog.url)}`} legacyBehavior>
               <a>{blog.title}</a>
             </Link>
