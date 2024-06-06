@@ -1,46 +1,47 @@
 // src/app/page.js
-import Link from "next/link";
-import axios from "axios";
+"use client";
 import { notFound } from "next/navigation";
+import ploneClient from "@plone/client";
+import { useQuery } from "@tanstack/react-query";
+import React, { useMemo } from "react";
+import { Slate, Editable, withReact } from "slate-react";
+import { createEditor } from "slate";
 
-async function fetchBlogs() {
-  try {
-    const res = await axios.get("http://localhost:8080/Plone/++api++/blogs");
-    return res.data.items.map((item) => ({
-      id: item.id,
-      title: item.title,
-      url: item["@id"],
-    }));
-  } catch (error) {
-    console.error("Error fetching blogs:", error);
-    return null;
+export default function Home() {
+  const client = ploneClient.initialize({
+    apiPath: "https://hydra.pretagov.com/",
+    token: "",
+  });
+  const { getContentQuery } = client;
+  const { data, isLoading } = useQuery(getContentQuery({ path: "/" }));
+  const editor = useMemo(() => withReact(createEditor()), []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
-}
 
-export default async function Home() {
-  const blogs = await fetchBlogs();
-
-  if (!blogs) {
+  if (!data) {
     return notFound();
+  } else {
+    return (
+      <div className="home">
+        <h1 className="home-title">{data.title}</h1>
+        <ul className="blog-list">
+          {data.blocks_layout.items.map((id, index) => {
+            if (data.blocks[id]["@type"] === "slate") {
+              const slateValue = data.blocks[id].value;
+              console.log(slateValue);
+              return (
+                <li key={index} className="blog-list-item">
+                  <Slate editor={editor} initialValue={slateValue}>
+                    <Editable readOnly={true} />
+                  </Slate>
+                </li>
+              );
+            }
+          })}
+        </ul>
+      </div>
+    );
   }
-  function getEndpoint(url) {
-    const urlObj = new URL(url);
-    const path = urlObj.pathname;
-    const parts = path.split("/");
-    return parts[parts.length - 1];
-  }
-  return (
-    <div className="home">
-      <h1 className="home-title">Home</h1>
-      <ul className="blog-list">
-        {blogs.map((blog,index) => (
-          <li key={index} className="blog-list-item">
-            <Link href={`blogs/${getEndpoint(blog.url)}`} legacyBehavior>
-              <a>{blog.title}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 }
