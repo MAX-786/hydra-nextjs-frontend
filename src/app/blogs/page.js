@@ -1,16 +1,22 @@
-// src/app/page.js
 "use client";
 import Link from "next/link";
-import axios from "axios";
 import { notFound } from "next/navigation";
 import ploneClient from "@plone/client";
 import { useQuery } from "@tanstack/react-query";
+import { initBridge, getToken } from "@/utils/hydra";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const client = ploneClient.initialize({
-    apiPath: "http://localhost:8080/Plone/",
-    token: process.env.AUTH_TOKEN,
-  });
+  const bridge = initBridge("http://localhost:3000");
+  const [token, setToken] = useState(bridge._getTokenFromCookie());
+  const client = ploneClient.initialize({ apiPath: "http://localhost:8080/Plone/", token: token });
+  
+  useEffect(() => {
+    getToken().then((token) => {
+      setToken(token);
+    });
+  }, []);
+
   const { getContentQuery } = client;
   const { data, isLoading } = useQuery(getContentQuery({ path: "/blogs" }));
 

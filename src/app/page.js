@@ -8,8 +8,9 @@ import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
 
 export default function Home() {
+
   const client = ploneClient.initialize({
-    apiPath: "https://hydra.pretagov.com/",
+    apiPath: "http://localhost:8080/Plone/",
     token: "",
   });
   const { getContentQuery } = client;
@@ -30,7 +31,6 @@ export default function Home() {
           {data.blocks_layout.items.map((id, index) => {
             if (data.blocks[id]["@type"] === "slate") {
               const slateValue = data.blocks[id].value;
-              console.log(slateValue);
               return (
                 <li key={index} className="blog-list-item">
                   <Slate editor={editor} initialValue={slateValue}>
