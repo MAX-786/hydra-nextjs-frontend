@@ -5,6 +5,7 @@ import ploneClient from "@plone/client";
 import { useQuery } from "@tanstack/react-query";
 import { initBridge, getToken } from "@/utils/hydra";
 import { useEffect, useState } from "react";
+import { onEditChange } from "@/utils/hydra";
 
 export default function Home() {
   const bridge = initBridge("http://localhost:3000");
@@ -19,6 +20,15 @@ export default function Home() {
 
   const { getContentQuery } = client;
   const { data, isLoading } = useQuery(getContentQuery({ path: "/blogs" }));
+
+  const [value, setValue] = useState(data);
+  useEffect(() => {
+    onEditChange(data, (updatedData) => {
+      if (updatedData) {
+        setValue(updatedData);
+      }
+    });
+  });
 
   function getEndpoint(url) {
     const urlObj = new URL(url);
@@ -36,7 +46,7 @@ export default function Home() {
   } else {
     return (
       <div className="home">
-        <h1 className="home-title">{data?.title}</h1>
+        <h1 className="home-title">{value?.title ? value.title: data.title}</h1>
         <ul className="blog-list">
           {data?.items.map((blog, index) => (
             <li key={index} className="blog-list-item">

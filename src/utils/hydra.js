@@ -11,12 +11,15 @@ class Bridge {
       return;
     }
 
-    window.navigation.addEventListener("navigate", (event) => {
-      parent.postMessage(
-        { type: "URL_CHANGE", url: event.destination.url },
-        this.adminOrigin
-      );
-    });
+    if (window.self !== window.top) {
+      window.navigation.addEventListener("navigate", (event) => {
+        window.parent.postMessage(
+          { type: "URL_CHANGE", url: event.destination.url },
+          this.adminOrigin
+        );
+      });
+    }
+
     window.addEventListener("message", (event) => {
       if (event.origin === this.adminOrigin) {
         if (event.data.type === "GET_TOKEN_RESPONSE") {
@@ -26,23 +29,39 @@ class Bridge {
       }
     });
   }
-
+  onEditChange(initialData, callback) {
+    window.addEventListener("message", (event) => {
+      if (event.origin === this.adminOrigin) {
+        if (event.data.type === "FORM") {
+          if (event.data.data) {
+            callback(event.data.data);
+          } else {
+            callback(initialData);
+          }
+        }
+      }
+    });
+  }
   async get_token() {
     if (this.token !== null) {
       return this.token;
     }
     const cookieToken = this._getTokenFromCookie();
     if (cookieToken) {
-        this.token = cookieToken;
-        return cookieToken;
+      this.token = cookieToken;
+      return cookieToken;
     }
-    
-    try {
-        parent.postMessage({ type: "GET_TOKEN" }, this.adminOrigin);
+
+    if (window.self !== window.top) {
+      try {
+        window.parent.postMessage({ type: "GET_TOKEN" }, this.adminOrigin);
         const token = await this._waitForToken(this.adminOrigin);
         return token;
-    } catch (error) {
-      console.error("Failed to retrieve auth_token:", error);
+      } catch (error) {
+        console.error("Failed to retrieve auth_token:", error);
+        return null;
+      }
+    } else {
       return null;
     }
   }
@@ -122,4 +141,14 @@ export async function getToken() {
     return await bridgeInstance.get_token();
   }
   return "";
+}
+/**
+ * Enable the frontend to listen for changes in the admin and call the callback with updated data
+ * @param {*} initialData
+ * @param {*} callback 
+ */
+export function onEditChange(initialData, callback) {
+  if (bridgeInstance) {
+    bridgeInstance.onEditChange(initialData, callback);
+  }
 }
