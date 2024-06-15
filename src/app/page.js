@@ -23,7 +23,7 @@ export default function Home() {
         setValue(updatedData);
       }
     });
-  });
+  },[data]);
   
   if (isLoading) {
     return <div>Loading...</div>;
@@ -35,20 +35,21 @@ export default function Home() {
     return (
       <div className="home">
         <h1 className="home-title">{value?.title ? value.title: data.title}</h1>
-        {/* <ul className="blog-list">
+        <ul className="blog-list">
           {data.blocks_layout.items.map((id, index) => {
             if (data.blocks[id]["@type"] === "slate") {
               const slateValue = data.blocks[id].value;
               return (
-                <li key={index} className="blog-list-item">
-                  <Slate editor={editor} initialValue={slateValue}>
+                <li key={id} className="blog-list-item">
+                  {/* <Slate editor={editor} initialValue={slateValue}>
                     <Editable readOnly={true} />
-                  </Slate>
+                  </Slate> */}
+                  <pre className="pre-block">{JSON.stringify(slateValue, null, 2)}</pre>
                 </li>
               );
             }
           })}
-        </ul> */}
+        </ul>
       </div>
     );
   }
