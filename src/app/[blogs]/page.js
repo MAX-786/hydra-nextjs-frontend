@@ -8,9 +8,9 @@ import { useEffect, useState } from "react";
 import { onEditChange } from "@/utils/hydra";
 
 export default function Home({params}) {
-  const bridge = initBridge("http://localhost:3000");
+  const bridge = initBridge("https://hydra.pretagov.com/");
   const [token, setToken] = useState(bridge._getTokenFromCookie());
-  const client = ploneClient.initialize({ apiPath: "http://localhost:8080/Plone/", token: token });
+  const client = ploneClient.initialize({ apiPath: "https://hydra.pretagov.com/", token: token });
 
   useEffect(() => {
     getToken().then((token) => {

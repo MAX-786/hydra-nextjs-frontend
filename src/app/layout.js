@@ -8,10 +8,6 @@ import TranstackProviders from "@/providers/TranstackProviders";
 
 export default function RootLayout({children}) {
 
-  useEffect(() => {
-    initBridge("http://localhost:3000");
-  });
-
   return (
     <>
       <html lang="en">

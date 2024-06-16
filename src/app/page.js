@@ -11,10 +11,10 @@ import Link from "next/link";
 import { initBridge, getToken } from "@/utils/hydra";
 
 export default function Home() {
-  const bridge = initBridge("http://localhost:3000");
+  const bridge = initBridge("https://hydra.pretagov.com/");
   const [token, setToken] = useState(bridge._getTokenFromCookie());
   const client = ploneClient.initialize({
-    apiPath: "http://localhost:8080/Plone/",
+    apiPath: "https://hydra.pretagov.com/",
     token: token,
   });
   const { getContentQuery } = client;

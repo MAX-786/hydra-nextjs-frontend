@@ -9,10 +9,10 @@ import { initBridge, onEditChange } from "@/utils/hydra";
 import { useEffect, useState } from "react";
 
 export default function Blog({ params }) {
-  const bridge = initBridge("http://localhost:3000");
+  const bridge = initBridge("https://hydra.pretagov.com/");
   const token = bridge._getTokenFromCookie();
   const client = ploneClient.initialize({
-    apiPath: "http://localhost:8080/Plone/",
+    apiPath: "https://hydra.pretagov.com/",
     token: token,
   });
   const { getContentQuery } = client;
