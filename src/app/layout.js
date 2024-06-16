@@ -25,9 +25,6 @@ export default function RootLayout({children}) {
                 <Link href="/" passHref legacyBehavior>
                   <a className="home-button">Go to Home</a>
                 </Link>
-                <Link href="/blogs" passHref legacyBehavior>
-                  <a className="home-button">Go to Blogs</a>
-                </Link>
               </nav>
             </header>
             <div className="container">{children}</div>

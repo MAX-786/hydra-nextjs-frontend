@@ -7,11 +7,11 @@ import { initBridge, getToken } from "@/utils/hydra";
 import { useEffect, useState } from "react";
 import { onEditChange } from "@/utils/hydra";
 
-export default function Home() {
+export default function Home({params}) {
   const bridge = initBridge("http://localhost:3000");
   const [token, setToken] = useState(bridge._getTokenFromCookie());
   const client = ploneClient.initialize({ apiPath: "http://localhost:8080/Plone/", token: token });
-  
+
   useEffect(() => {
     getToken().then((token) => {
       setToken(token);
@@ -19,7 +19,7 @@ export default function Home() {
   }, []);
 
   const { getContentQuery } = client;
-  const { data, isLoading } = useQuery(getContentQuery({ path: "/blogs" }));
+  const { data, isLoading } = useQuery(getContentQuery({ path: `/${params.blogs}` }));
 
   const [value, setValue] = useState(data);
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function Home() {
         <ul className="blog-list">
           {data?.items.map((blog, index) => (
             <li key={index} className="blog-list-item">
-              <Link href={`blogs/${getEndpoint(blog["@id"])}`} legacyBehavior>
+              <Link href={`${params.blogs}/${getEndpoint(blog["@id"])}`} legacyBehavior>
                 <a>{blog.title}</a>
               </Link>
             </li>
