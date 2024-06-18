@@ -114,6 +114,18 @@ class Bridge {
     }
     return null;
   }
+  enableBlockClickListener() {
+    document.addEventListener("click", (event) => {
+      const blockElement = event.target.closest("[data-block-uid]");
+      if (blockElement) {
+        const blockUid = blockElement.getAttribute("data-block-uid");
+        window.parent.postMessage(
+          { type: "OPEN_SETTINGS", uid: blockUid },
+          this.adminOrigin
+        );
+      }
+    });
+  }
 }
 
 // Export an instance of the Bridge class
@@ -145,10 +157,16 @@ export async function getToken() {
 /**
  * Enable the frontend to listen for changes in the admin and call the callback with updated data
  * @param {*} initialData
- * @param {*} callback 
+ * @param {*} callback
  */
 export function onEditChange(initialData, callback) {
   if (bridgeInstance) {
     bridgeInstance.onEditChange(initialData, callback);
+  }
+}
+
+export function enableBlockClickListener() {
+  if (bridgeInstance) {
+    bridgeInstance.enableBlockClickListener();
   }
 }

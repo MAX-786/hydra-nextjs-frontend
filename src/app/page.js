@@ -8,7 +8,8 @@ import { Slate, Editable, withReact } from "slate-react";
 import { createEditor } from "slate";
 import { onEditChange } from "@/utils/hydra";
 import Link from "next/link";
-import { initBridge, getToken } from "@/utils/hydra";
+import { initBridge, getToken, enableBlockClickListener } from "@/utils/hydra";
+import Image from "next/image";              
 
 export default function Home() {
   const bridge = initBridge("http://localhost:3000");
@@ -33,6 +34,7 @@ export default function Home() {
     getToken().then((token) => {
       setToken(token);
     });
+    enableBlockClickListener();
   }, []);
 
   function getEndpoint(url) {
@@ -61,21 +63,28 @@ export default function Home() {
               </Link>
             </li>
           ))}
-          {/* {data.blocks_layout.items.map((id, index) => {
+          {data.blocks_layout.items.map((id, index) => {
             if (data.blocks[id]["@type"] === "slate") {
               const slateValue = data.blocks[id].value;
               return (
-                <li key={id} className="blog-list-item">
-                  <Slate editor={editor} initialValue={slateValue}>
+                <li key={id} className="blog-list-item" data-block-uid={`${id}`} >
+                  {/* <Slate editor={editor} initialValue={slateValue}>
                     <Editable readOnly={true} />
-                  </Slate>
+                  </Slate> */}
                   <pre className="pre-block">
                     {JSON.stringify(slateValue, null, 2)}
                   </pre>
                 </li>
               );
+            } else if ( data.blocks[id]["@type"] === "image" ) {
+              const image_url = data.blocks[id].url;
+              return (
+                <li key={id} className="blog-list-item" data-block-uid={`${id}`} >
+                  <img src={image_url} alt="" width={100} height={100}/>
+                </li>
+              );
             }
-          })} */}
+          })}
         </ul>
       </div>
     );
