@@ -18,6 +18,10 @@ class Bridge {
           this.adminOrigin
         );
       });
+      // Get the access token from the URL
+      const url = new URL(window.location.href);
+      this.token = url.searchParams.get("access_token");
+      this._setTokenCookie(this.token);
     }
 
     window.addEventListener("message", (event) => {
@@ -29,74 +33,35 @@ class Bridge {
       }
     });
   }
-  onEditChange(initialData, callback) {
+  onEditChange(callback) {
     window.addEventListener("message", (event) => {
       if (event.origin === this.adminOrigin) {
         if (event.data.type === "FORM") {
           if (event.data.data) {
             callback(event.data.data);
           } else {
-            callback(initialData);
+            throw new Error("No form data has been sent from the adminUI");
           }
         }
       }
     });
   }
-  async get_token() {
+  async getToken() {
     if (this.token !== null) {
       return this.token;
     }
-    const cookieToken = this._getTokenFromCookie();
-    if (cookieToken) {
-      this.token = cookieToken;
-      return cookieToken;
-    }
-
-    if (window.self !== window.top) {
-      try {
-        window.parent.postMessage({ type: "GET_TOKEN" }, this.adminOrigin);
-        const token = await this._waitForToken(this.adminOrigin);
-        return token;
-      } catch (error) {
-        console.error("Failed to retrieve auth_token:", error);
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-
-  _waitForToken(adminOrigin) {
-    return new Promise((resolve, reject) => {
-      const tokenListener = (event) => {
-        if (adminOrigin === this.adminOrigin) {
-          if (event.data.type === "GET_TOKEN_RESPONSE") {
-            window.removeEventListener("message", tokenListener);
-            this._setTokenCookie(event.data.token);
-            resolve(event.data.token);
-          } else {
-            reject(
-              new Error(
-                `Invalid message type: Expected GET_TOKEN_RESPONSE, received ${event.data.type}`
-              )
-            );
-          }
-        } else {
-          reject(
-            new Error(
-              `Origin mismatch: Expected ${this.adminOrigin}, received ${adminOrigin}`
-            )
-          );
-        }
-      };
-      window.addEventListener("message", tokenListener);
-    });
+    return this._getTokenFromCookie();
   }
 
   _setTokenCookie(token) {
     const expiryDate = new Date();
     expiryDate.setTime(expiryDate.getTime() + 12 * 60 * 60 * 1000); // 12 hours
-    document.cookie = `auth_token=${token}; expires=${expiryDate.toUTCString()}; path=/`;
+
+
+    const url = new URL(window.location.href);
+    const domain = url.hostname;
+
+    document.cookie = `auth_token=${token}; expires=${expiryDate.toUTCString()}; path=/; domain=${domain};`;
   }
 
   _getTokenFromCookie() {
@@ -150,7 +115,7 @@ export function initBridge(adminOrigin) {
  */
 export async function getToken() {
   if (bridgeInstance) {
-    return await bridgeInstance.get_token();
+    return await bridgeInstance.getToken();
   }
   return "";
 }
@@ -159,9 +124,9 @@ export async function getToken() {
  * @param {*} initialData
  * @param {*} callback
  */
-export function onEditChange(initialData, callback) {
+export function onEditChange(callback) {
   if (bridgeInstance) {
-    bridgeInstance.onEditChange(initialData, callback);
+    bridgeInstance.onEditChange(callback);
   }
 }
 

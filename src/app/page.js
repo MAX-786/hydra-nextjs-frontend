@@ -9,7 +9,8 @@ import { createEditor } from "slate";
 import { onEditChange } from "@/utils/hydra";
 import Link from "next/link";
 import { initBridge, getToken, enableBlockClickListener } from "@/utils/hydra";
-import Image from "next/image";              
+
+// window.location.search.includes("_edit")
 
 export default function Home() {
   const bridge = initBridge("http://localhost:3000");
@@ -23,7 +24,7 @@ export default function Home() {
   const editor = useMemo(() => withReact(createEditor()), []);
   const [value, setValue] = useState(data);
   useEffect(() => {
-    onEditChange(data, (updatedData) => {
+    onEditChange((updatedData) => {
       if (updatedData) {
         setValue(updatedData);
       }
@@ -31,10 +32,12 @@ export default function Home() {
   }, [data]);
 
   useEffect(() => {
-    getToken().then((token) => {
-      setToken(token);
-    });
-    enableBlockClickListener();
+    if (
+      typeof window !== undefined &&
+      window.location.search.includes("_edit")
+    ) {
+      enableBlockClickListener();
+    }
   }, []);
 
   function getEndpoint(url) {
@@ -46,7 +49,9 @@ export default function Home() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
+  if (!value) {
+    setValue(data);
+  }
   if (!data) {
     return notFound();
   } else {
@@ -63,11 +68,14 @@ export default function Home() {
               </Link>
             </li>
           ))}
-          {data.blocks_layout.items.map((id, index) => {
+          {value?.blocks_layout.items.map((id, index) => {
             if (data.blocks[id]["@type"] === "slate") {
               const slateValue = data.blocks[id].value;
               return (
-                <li key={id} className="blog-list-item" data-block-uid={`${id}`} >
+                <li
+                  key={id}
+                  className="blog-list-item"
+                  data-block-uid={`${id}`}>
                   {/* <Slate editor={editor} initialValue={slateValue}>
                     <Editable readOnly={true} />
                   </Slate> */}
@@ -76,11 +84,14 @@ export default function Home() {
                   </pre>
                 </li>
               );
-            } else if ( data.blocks[id]["@type"] === "image" ) {
+            } else if (data.blocks[id]["@type"] === "image") {
               const image_url = data.blocks[id].url;
               return (
-                <li key={id} className="blog-list-item" data-block-uid={`${id}`} >
-                  <img src={image_url} alt="" width={100} height={100}/>
+                <li
+                  key={id}
+                  className="blog-list-item"
+                  data-block-uid={`${id}`}>
+                  <img src={image_url} alt="" width={100} height={100} />
                 </li>
               );
             }

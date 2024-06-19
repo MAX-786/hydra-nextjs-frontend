@@ -23,7 +23,7 @@ export default function Home({params}) {
 
   const [value, setValue] = useState(data);
   useEffect(() => {
-    onEditChange(data, (updatedData) => {
+    onEditChange((updatedData) => {
       if (updatedData) {
         setValue(updatedData);
       }

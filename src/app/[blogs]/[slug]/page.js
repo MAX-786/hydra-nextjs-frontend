@@ -21,7 +21,7 @@ export default function Blog({ params }) {
   const [value, setValue] = useState(data);
 
   useEffect(() => {
-    onEditChange(data, (updatedData) => {
+    onEditChange((updatedData) => {
       if (updatedData) {
         setValue(updatedData);
       }
@@ -40,7 +40,9 @@ export default function Blog({ params }) {
   if (data) {
     return (
       <div className="blog">
-        <h1 className="blog-title">{value?.title ? value.title: data.title}</h1>
+        <h1 className="blog-title">
+          {value?.title ? value.title : data.title}
+        </h1>
         <ul className="blog-list">
           {data?.items.map((blog, index) => (
             <li key={index} className="blog-list-item">
