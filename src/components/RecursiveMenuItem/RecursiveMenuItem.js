@@ -16,7 +16,7 @@ const RecursiveMenuItem = ({ item }) => {
     async function getSubItems(token = null) {
       if (item["@type"] === "Document") {
         try {
-          const apiPath = "http://localhost:8080/Plone";
+          const apiPath = "https://hydra.pretagov.com";
           const content = await fetchContent(apiPath, {
             token: token,
             path: extractEndpoints(item["@id"]),
