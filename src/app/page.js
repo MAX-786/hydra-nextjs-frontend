@@ -3,25 +3,23 @@
 import { notFound } from "next/navigation";
 import ploneClient from "@plone/client";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useMemo, useState } from "react";
-import { Slate, Editable, withReact } from "slate-react";
-import { createEditor } from "slate";
+import React, { useEffect, useState } from "react";
+// import { Slate, Editable, withReact } from "slate-react";
+// import { createEditor } from "slate";
 import { onEditChange } from "@/utils/hydra";
 import Link from "next/link";
-import { initBridge, getToken, enableBlockClickListener } from "@/utils/hydra";
-
-// window.location.search.includes("_edit")
+import { getTokenFromCookie } from "@/utils/hydra";
+import { getEndpoint } from "@/utils/getEndpoints";
 
 export default function Home() {
-  const bridge = initBridge("http://localhost:3000");
-  const [token, setToken] = useState(bridge._getTokenFromCookie());
+  const token = getTokenFromCookie();
   const client = ploneClient.initialize({
     apiPath: "http://localhost:8080/Plone/",
     token: token,
   });
   const { getContentQuery } = client;
   const { data, isLoading } = useQuery(getContentQuery({ path: "/" }));
-  const editor = useMemo(() => withReact(createEditor()), []);
+  // const editor = useMemo(() => withReact(createEditor()), []);
   const [value, setValue] = useState(data);
   useEffect(() => {
     onEditChange((updatedData) => {
@@ -31,21 +29,6 @@ export default function Home() {
     });
   }, [data]);
 
-  useEffect(() => {
-    if (
-      typeof window !== undefined &&
-      window.location.search.includes("_edit")
-    ) {
-      enableBlockClickListener();
-    }
-  }, []);
-
-  function getEndpoint(url) {
-    const urlObj = new URL(url);
-    const path = urlObj.pathname;
-    const parts = path.split("/");
-    return parts[parts.length - 1];
-  }
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -61,15 +44,19 @@ export default function Home() {
           {value?.title ? value.title : data.title}
         </h1>
         <ul className="blog-list">
-          {data?.items.map((blog, index) => (
-            <li key={index} className="blog-list-item">
-              <Link href={`/${getEndpoint(blog["@id"])}`} legacyBehavior>
-                <a>{blog.title}</a>
-              </Link>
-            </li>
-          ))}
+          {value?.items.map((blog, index) => {
+            if (blog["@type"] === "Document") {
+              return (
+                <li key={index} className="blog-list-item">
+                  <Link href={`/${getEndpoint(blog["@id"])}`} legacyBehavior>
+                    <a>{blog.title}</a>
+                  </Link>
+                </li>
+              );
+            }
+          })}
           {value?.blocks_layout.items.map((id, index) => {
-            if (data.blocks[id]["@type"] === "slate") {
+            if (value.blocks[id]["@type"] === "slate") {
               const slateValue = data.blocks[id].value;
               return (
                 <li
@@ -84,8 +71,8 @@ export default function Home() {
                   </pre>
                 </li>
               );
-            } else if (data.blocks[id]["@type"] === "image") {
-              const image_url = data.blocks[id].url;
+            } else if (value.blocks[id]["@type"] === "image") {
+              const image_url = value.blocks[id].url;
               return (
                 <li
                   key={id}

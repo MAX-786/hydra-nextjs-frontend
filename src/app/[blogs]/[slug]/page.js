@@ -5,12 +5,11 @@ import ploneClient from "@plone/client";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { initBridge, onEditChange } from "@/utils/hydra";
+import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
 import { useEffect, useState } from "react";
 
 export default function Blog({ params }) {
-  const bridge = initBridge("http://localhost:3000");
-  const token = bridge._getTokenFromCookie();
+  const token = getTokenFromCookie();
   const client = ploneClient.initialize({
     apiPath: "http://localhost:8080/Plone/",
     token: token,
@@ -29,13 +28,10 @@ export default function Blog({ params }) {
   });
 
   if (isLoading) {
-    return <div></div>;
+    return <div>Loading...</div>;
   }
-  function getEndpoint(url) {
-    const urlObj = new URL(url);
-    const path = urlObj.pathname;
-    const parts = path.split("/");
-    return parts[parts.length - 1];
+  if (!value) {
+    setValue(data);
   }
   if (data) {
     return (
@@ -44,11 +40,9 @@ export default function Blog({ params }) {
           {value?.title ? value.title : data.title}
         </h1>
         <ul className="blog-list">
-          {data?.items.map((blog, index) => (
+          {value?.items.map((blog, index) => (
             <li key={index} className="blog-list-item">
-              <Link href={`blogs/${getEndpoint(blog["@id"])}`} legacyBehavior>
-                <a>{blog.title}</a>
-              </Link>
+              {blog.title}
             </li>
           ))}
         </ul>
