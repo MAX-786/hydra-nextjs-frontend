@@ -1,5 +1,5 @@
 export default function extractEndpoints(url) {
-    const baseUrl = "http://localhost:8080/Plone/";
+    const baseUrl = "https://hydra.pretagov.com/";
     if (url.startsWith(baseUrl)) {
       return url.split(baseUrl)[1];
     } else {
