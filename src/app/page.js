@@ -1,27 +1,37 @@
-// src/app/page.js
 "use client";
 import { notFound } from "next/navigation";
-import ploneClient from "@plone/client";
-import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-// import { Slate, Editable, withReact } from "slate-react";
-// import { createEditor } from "slate";
-import { onEditChange } from "@/utils/hydra";
 import Link from "next/link";
-import { getTokenFromCookie } from "@/utils/hydra";
+import { getTokenFromCookie, onEditChange } from "@/utils/hydra";
 import { getEndpoint } from "@/utils/getEndpoints";
+import { fetchContent } from "@/utils/api";
 
 export default function Home() {
-  const url = new URL(window.location.href);
-  const token = url.searchParams.get("access_token") || getTokenFromCookie();
-  const client = ploneClient.initialize({
-    apiPath: "https://hydra.pretagov.com/",
-    token: token,
-  });
-  const { getContentQuery } = client;
-  const { data, isLoading } = useQuery(getContentQuery({ path: "/" }));
-  // const editor = useMemo(() => withReact(createEditor()), []);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getData(token = null) {
+      try {
+        const apiPath = "https://hydra.pretagov.com";
+        const path = "";
+        const content = await fetchContent(apiPath, { token, path });
+        setData(content);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    const url = new URL(window.location.href);
+    const tokenFromUrl =
+      url.searchParams.get("access_token") || getTokenFromCookie();
+    getData(tokenFromUrl);
+  }, []);
+
   const [value, setValue] = useState(data);
+
   useEffect(() => {
     onEditChange((updatedData) => {
       if (updatedData) {
@@ -30,12 +40,14 @@ export default function Home() {
     });
   }, [data]);
 
-  if (isLoading) {
+  if (loading) {
     return <div>Loading...</div>;
   }
+
   if (!value) {
     setValue(data);
   }
+
   if (!data) {
     return notFound();
   } else {
@@ -64,9 +76,6 @@ export default function Home() {
                   key={id}
                   className="blog-list-item"
                   data-block-uid={`${id}`}>
-                  {/* <Slate editor={editor} initialValue={slateValue}>
-                    <Editable readOnly={true} />
-                  </Slate> */}
                   <pre className="pre-block">
                     {JSON.stringify(slateValue, null, 2)}
                   </pre>

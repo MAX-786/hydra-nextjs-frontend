@@ -9,7 +9,7 @@ import TranstackProviders from "@/providers/TranstackProviders";
 export default function RootLayout({children}) {
 
   useEffect(() => {
-    initBridge("https://hydra.pretagov.com/");
+    initBridge("https://hydra.pretagov.com");
   });
 
   return (
