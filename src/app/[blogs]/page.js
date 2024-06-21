@@ -8,9 +8,11 @@ import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
 import { getEndpoint } from "@/utils/getEndpoints";
 
 export default function Home({ params }) {
+  const url = new URL(window.location.href);
+  const token = url.searchParams.get("access_token") || getTokenFromCookie();
   const client = ploneClient.initialize({
     apiPath: "https://hydra.pretagov.com/",
-    token: getTokenFromCookie(),
+    token: token,
   });
 
   const { getContentQuery } = client;

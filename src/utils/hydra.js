@@ -75,7 +75,6 @@ class Bridge {
    */
   enableBlockClickListener() {
     this.blockClickHandler = (event) => {
-      console.log('Block clicked');
       const blockElement = event.target.closest('[data-block-uid]');
       if (blockElement) {
         // Remove border and button from the previously selected block
