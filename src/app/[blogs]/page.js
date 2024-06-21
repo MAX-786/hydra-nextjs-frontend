@@ -9,11 +9,12 @@ import { fetchContent } from "@/utils/api";
 export default function Home({ params }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [value, setValue] = useState(data);
 
   useEffect(() => {
     async function getData(token = null) {
       try {
-        const apiPath = "https://hydra.pretagov.com";
+        const apiPath = "http://localhost:8080/Plone";
         const path = `${params.blogs}`;
         const content = await fetchContent(apiPath, { token, path });
         setData(content);
@@ -30,7 +31,6 @@ export default function Home({ params }) {
     getData(tokenFromUrl);
   }, [params.blogs]);
 
-  const [value, setValue] = useState(data);
   useEffect(() => {
     onEditChange((updatedData) => {
       if (updatedData) {
@@ -41,6 +41,9 @@ export default function Home({ params }) {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+  if (!value) {
+    setValue(data);
   }
 
   const ItemList = () => {
@@ -64,8 +67,8 @@ export default function Home({ params }) {
     return notFound();
   } else {
     return (
-      <div className="home">
-        <h1 className="home-title">
+      <div className="blog">
+        <h1 className="blog-title">
           {value?.title ? value.title : data.title}
         </h1>
         <ItemList />

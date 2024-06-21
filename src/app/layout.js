@@ -1,34 +1,32 @@
 "use client";
 import "../styles.css";
+import "semantic-ui-css/semantic.min.css";
 import { useEffect } from "react";
-import Link from "next/link";
 import { initBridge } from "@/utils/hydra";
 import TranstackProviders from "@/providers/TranstackProviders";
+import { Container } from "semantic-ui-react";
+import Menu from "@/components/Menu";
 
-
-export default function RootLayout({children}) {
-
+export default function RootLayout({ children }) {
   useEffect(() => {
-    initBridge("https://hydra.pretagov.com");
+    initBridge("http://localhost:8080/Plone");
   });
 
   return (
     <>
       <html lang="en">
         <head>
-          <title>Blog Application</title>
+          <title>Volto Hydra Nextjs Example Frontend </title>
         </head>
         <body>
-          <TranstackProviders>
+          <Container>
             <header>
-              <nav>
-                <Link href="/" passHref legacyBehavior>
-                  <a className="home-button">Go to Home</a>
-                </Link>
-              </nav>
+              <Menu />
             </header>
-            <div className="container">{children}</div>
-          </TranstackProviders>
+            <TranstackProviders>
+              <div className="container">{children}</div>
+            </TranstackProviders>
+          </Container>
         </body>
       </html>
     </>
