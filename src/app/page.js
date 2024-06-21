@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     async function getData(token = null) {
       try {
-        const apiPath = "https://hydra.pretagov.com";
+        const apiPath = "http://localhost:8080/Plone";
         const path = "";
         const content = await fetchContent(apiPath, { token, path });
         setData(content);
