@@ -1,4 +1,3 @@
-// src/app/blogs/[slug]/page.js
 "use client";
 import { notFound } from "next/navigation";
 import { usePathname } from "next/navigation";
@@ -13,7 +12,7 @@ export default function Blog({ params }) {
   useEffect(() => {
     async function getData(token = null) {
       try {
-        const apiPath = "https://hydra.pretagov.com";
+        const apiPath = "http://localhost:8080/Plone";
         const path = pathname;
         const content = await fetchContent(apiPath, { token, path });
         setData(content);
