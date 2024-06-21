@@ -1,52 +1,61 @@
 // src/app/blogs/[slug]/page.js
 "use client";
 import { notFound } from "next/navigation";
-import ploneClient from "@plone/client";
-import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { initBridge, onEditChange } from "@/utils/hydra";
+import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
 import { useEffect, useState } from "react";
+import { fetchContent } from "@/utils/api";
 
 export default function Blog({ params }) {
-  const bridge = initBridge("https://hydra.pretagov.com/");
-  const token = bridge._getTokenFromCookie();
-  const client = ploneClient.initialize({
-    apiPath: "https://hydra.pretagov.com/",
-    token: token,
-  });
-  const { getContentQuery } = client;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const pathname = usePathname();
-  const { data, isLoading } = useQuery(getContentQuery({ path: pathname }));
+  useEffect(() => {
+    async function getData(token = null) {
+      try {
+        const apiPath = "https://hydra.pretagov.com";
+        const path = pathname;
+        const content = await fetchContent(apiPath, { token, path });
+        setData(content);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    const url = new URL(window.location.href);
+    const tokenFromUrl =
+      url.searchParams.get("access_token") || getTokenFromCookie();
+    getData(tokenFromUrl);
+  }, [pathname]);
+
   const [value, setValue] = useState(data);
 
   useEffect(() => {
-    onEditChange(data, (updatedData) => {
+    onEditChange((updatedData) => {
       if (updatedData) {
         setValue(updatedData);
       }
     });
   });
 
-  if (isLoading) {
-    return <div></div>;
+  if (loading) {
+    return <div>Loading...</div>;
   }
-  function getEndpoint(url) {
-    const urlObj = new URL(url);
-    const path = urlObj.pathname;
-    const parts = path.split("/");
-    return parts[parts.length - 1];
+  if (!value) {
+    setValue(data);
   }
   if (data) {
     return (
       <div className="blog">
-        <h1 className="blog-title">{value?.title ? value.title: data.title}</h1>
+        <h1 className="blog-title">
+          {value?.title ? value.title : data.title}
+        </h1>
         <ul className="blog-list">
-          {data?.items.map((blog, index) => (
+          {value?.items.map((blog, index) => (
             <li key={index} className="blog-list-item">
-              <Link href={`blogs/${getEndpoint(blog["@id"])}`} legacyBehavior>
-                <a>{blog.title}</a>
-              </Link>
+              {blog.title}
             </li>
           ))}
         </ul>

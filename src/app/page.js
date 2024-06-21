@@ -1,48 +1,51 @@
-// src/app/page.js
 "use client";
 import { notFound } from "next/navigation";
-import ploneClient from "@plone/client";
-import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useMemo, useState } from "react";
-import { Slate, Editable, withReact } from "slate-react";
-import { createEditor } from "slate";
-import { onEditChange } from "@/utils/hydra";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { initBridge, getToken } from "@/utils/hydra";
+import { getTokenFromCookie, onEditChange } from "@/utils/hydra";
+import { getEndpoint } from "@/utils/getEndpoints";
+import { fetchContent } from "@/utils/api";
 
 export default function Home() {
-  const bridge = initBridge("https://hydra.pretagov.com/");
-  const [token, setToken] = useState(bridge._getTokenFromCookie());
-  const client = ploneClient.initialize({
-    apiPath: "https://hydra.pretagov.com/",
-    token: token,
-  });
-  const { getContentQuery } = client;
-  const { data, isLoading } = useQuery(getContentQuery({ path: "/" }));
-  const editor = useMemo(() => withReact(createEditor()), []);
-  const [value, setValue] = useState(data);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    onEditChange(data, (updatedData) => {
+    async function getData(token = null) {
+      try {
+        const apiPath = "https://hydra.pretagov.com";
+        const path = "";
+        const content = await fetchContent(apiPath, { token, path });
+        setData(content);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    const url = new URL(window.location.href);
+    const tokenFromUrl =
+      url.searchParams.get("access_token") || getTokenFromCookie();
+    getData(tokenFromUrl);
+  }, []);
+
+  const [value, setValue] = useState(data);
+
+  useEffect(() => {
+    onEditChange((updatedData) => {
       if (updatedData) {
         setValue(updatedData);
       }
     });
   }, [data]);
 
-  useEffect(() => {
-    getToken().then((token) => {
-      setToken(token);
-    });
-  }, []);
-
-  function getEndpoint(url) {
-    const urlObj = new URL(url);
-    const path = urlObj.pathname;
-    const parts = path.split("/");
-    return parts[parts.length - 1];
-  }
-  if (isLoading) {
+  if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (!value) {
+    setValue(data);
   }
 
   if (!data) {
@@ -54,28 +57,42 @@ export default function Home() {
           {value?.title ? value.title : data.title}
         </h1>
         <ul className="blog-list">
-          {data?.items.map((blog, index) => (
-            <li key={index} className="blog-list-item">
-              <Link href={`/${getEndpoint(blog["@id"])}`} legacyBehavior>
-                <a>{blog.title}</a>
-              </Link>
-            </li>
-          ))}
-          {/* {data.blocks_layout.items.map((id, index) => {
-            if (data.blocks[id]["@type"] === "slate") {
+          {value?.items.map((blog, index) => {
+            if (blog["@type"] === "Document") {
+              return (
+                <li key={index} className="blog-list-item">
+                  <Link href={`/${getEndpoint(blog["@id"])}`} legacyBehavior>
+                    <a>{blog.title}</a>
+                  </Link>
+                </li>
+              );
+            }
+          })}
+          {value?.blocks_layout.items.map((id, index) => {
+            if (value.blocks[id]["@type"] === "slate") {
               const slateValue = data.blocks[id].value;
               return (
-                <li key={id} className="blog-list-item">
-                  <Slate editor={editor} initialValue={slateValue}>
-                    <Editable readOnly={true} />
-                  </Slate>
+                <li
+                  key={id}
+                  className="blog-list-item"
+                  data-block-uid={`${id}`}>
                   <pre className="pre-block">
                     {JSON.stringify(slateValue, null, 2)}
                   </pre>
                 </li>
               );
+            } else if (value.blocks[id]["@type"] === "image") {
+              const image_url = value.blocks[id].url;
+              return (
+                <li
+                  key={id}
+                  className="blog-list-item"
+                  data-block-uid={`${id}`}>
+                  <img src={image_url} alt="" width={100} height={100} />
+                </li>
+              );
             }
-          })} */}
+          })}
         </ul>
       </div>
     );

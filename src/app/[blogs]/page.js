@@ -1,61 +1,74 @@
 "use client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ploneClient from "@plone/client";
-import { useQuery } from "@tanstack/react-query";
-import { initBridge, getToken } from "@/utils/hydra";
 import { useEffect, useState } from "react";
-import { onEditChange } from "@/utils/hydra";
+import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
+import { getEndpoint } from "@/utils/getEndpoints";
+import { fetchContent } from "@/utils/api";
 
-export default function Home({params}) {
-  const bridge = initBridge("https://hydra.pretagov.com/");
-  const [token, setToken] = useState(bridge._getTokenFromCookie());
-  const client = ploneClient.initialize({ apiPath: "https://hydra.pretagov.com/", token: token });
+export default function Home({ params }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getToken().then((token) => {
-      setToken(token);
-    });
-  }, []);
+    async function getData(token = null) {
+      try {
+        const apiPath = "https://hydra.pretagov.com";
+        const path = `${params.blogs}`;
+        const content = await fetchContent(apiPath, { token, path });
+        setData(content);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  const { getContentQuery } = client;
-  const { data, isLoading } = useQuery(getContentQuery({ path: `/${params.blogs}` }));
+    const url = new URL(window.location.href);
+    const tokenFromUrl =
+      url.searchParams.get("access_token") || getTokenFromCookie();
+    getData(tokenFromUrl);
+  }, [params.blogs]);
 
   const [value, setValue] = useState(data);
   useEffect(() => {
-    onEditChange(data, (updatedData) => {
+    onEditChange((updatedData) => {
       if (updatedData) {
         setValue(updatedData);
       }
     });
   });
 
-  function getEndpoint(url) {
-    const urlObj = new URL(url);
-    const path = urlObj.pathname;
-    const parts = path.split("/");
-    return parts[parts.length - 1];
-  }
-
-  if (isLoading) {
+  if (loading) {
     return <div>Loading...</div>;
   }
+
+  const ItemList = () => {
+    const valueItems = value?.items ? value.items : data.items;
+    return (
+      <ul className="blog-list">
+        {valueItems.map((blog, index) => (
+          <li key={index} className="blog-list-item">
+            <Link
+              href={`${params.blogs}/${getEndpoint(blog["@id"])}`}
+              legacyBehavior>
+              <a>{blog.title}</a>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   if (!data) {
     return notFound();
   } else {
     return (
       <div className="home">
-        <h1 className="home-title">{value?.title ? value.title: data.title}</h1>
-        <ul className="blog-list">
-          {data?.items.map((blog, index) => (
-            <li key={index} className="blog-list-item">
-              <Link href={`${params.blogs}/${getEndpoint(blog["@id"])}`} legacyBehavior>
-                <a>{blog.title}</a>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <h1 className="home-title">
+          {value?.title ? value.title : data.title}
+        </h1>
+        <ItemList />
       </div>
     );
   }
