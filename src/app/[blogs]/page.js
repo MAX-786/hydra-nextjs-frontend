@@ -9,7 +9,7 @@ import { getEndpoint } from "@/utils/getEndpoints";
 
 export default function Home({ params }) {
   const client = ploneClient.initialize({
-    apiPath: "http://localhost:8080/Plone/",
+    apiPath: "https://hydra.pretagov.com/",
     token: getTokenFromCookie(),
   });
 
