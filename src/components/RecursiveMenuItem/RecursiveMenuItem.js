@@ -40,11 +40,11 @@ const RecursiveMenuItem = ({ item }) => {
   if (loading) {
     return null;
   }
-
+  const absoluteUrl = `${(new URL(window.location.href)).origin}/${extractEndpoints(item["@id"])}`;
   return subItems.length > 0 ? (
     <HoverableDropdown item={item} subItems={subItems} />
   ) : (
-    <SemanticMenu.Item as={Link} href={`${extractEndpoints(item["@id"])}`}>
+    <SemanticMenu.Item as={Link} href={absoluteUrl}>
       {item.title}
     </SemanticMenu.Item>
   );
