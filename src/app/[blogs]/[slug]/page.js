@@ -1,10 +1,10 @@
-// src/app/blogs/[slug]/page.js
 "use client";
 import { notFound } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
 import { useEffect, useState } from "react";
 import { fetchContent } from "@/utils/api";
+import BlocksList from "@/components/BlocksList";
 
 export default function Blog({ params }) {
   const [data, setData] = useState(null);
@@ -52,13 +52,7 @@ export default function Blog({ params }) {
         <h1 className="blog-title">
           {value?.title ? value.title : data.title}
         </h1>
-        <ul className="blog-list">
-          {value?.items.map((blog, index) => (
-            <li key={index} className="blog-list-item">
-              {blog.title}
-            </li>
-          ))}
-        </ul>
+        <BlocksList data={value || data} />
       </div>
     );
   } else {

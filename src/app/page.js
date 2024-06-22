@@ -1,10 +1,9 @@
 "use client";
 import { notFound } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { getTokenFromCookie, onEditChange } from "@/utils/hydra";
-import { getEndpoint } from "@/utils/getEndpoints";
 import { fetchContent } from "@/utils/api";
+import BlocksList from "@/components/BlocksList";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -50,51 +49,12 @@ export default function Home() {
 
   if (!data) {
     return notFound();
-  } else {
-    return (
-      <div className="home">
-        <h1 className="home-title">
-          {value?.title ? value.title : data.title}
-        </h1>
-        <ul className="blog-list">
-          {value?.items.map((blog, index) => {
-            if (blog["@type"] === "Document") {
-              return (
-                <li key={index} className="blog-list-item">
-                  <Link href={`/${getEndpoint(blog["@id"])}`} legacyBehavior>
-                    <a>{blog.title}</a>
-                  </Link>
-                </li>
-              );
-            }
-          })}
-          {value?.blocks_layout.items.map((id, index) => {
-            if (value.blocks[id]["@type"] === "slate") {
-              const slateValue = data.blocks[id].value;
-              return (
-                <li
-                  key={id}
-                  className="blog-list-item"
-                  data-block-uid={`${id}`}>
-                  <pre className="pre-block">
-                    {JSON.stringify(slateValue, null, 2)}
-                  </pre>
-                </li>
-              );
-            } else if (value.blocks[id]["@type"] === "image") {
-              const image_url = value.blocks[id].url;
-              return (
-                <li
-                  key={id}
-                  className="blog-list-item"
-                  data-block-uid={`${id}`}>
-                  <img src={image_url} alt="" width={100} height={100} />
-                </li>
-              );
-            }
-          })}
-        </ul>
-      </div>
-    );
   }
+
+  return (
+    <div className="home">
+      <h1 className="home-title">{value?.title ? value.title : data.title}</h1>
+      <BlocksList data={value || data} />
+    </div>
+  );
 }

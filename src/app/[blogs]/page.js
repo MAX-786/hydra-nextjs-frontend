@@ -1,14 +1,14 @@
 "use client";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
 import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
-import { getEndpoint } from "@/utils/getEndpoints";
 import { fetchContent } from "@/utils/api";
+import BlocksList from "@/components/BlocksList";
 
 export default function Home({ params }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [value, setValue] = useState(data);
 
   useEffect(() => {
     async function getData(token = null) {
@@ -30,7 +30,6 @@ export default function Home({ params }) {
     getData(tokenFromUrl);
   }, [params.blogs]);
 
-  const [value, setValue] = useState(data);
   useEffect(() => {
     onEditChange((updatedData) => {
       if (updatedData) {
@@ -42,33 +41,19 @@ export default function Home({ params }) {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  const ItemList = () => {
-    const valueItems = value?.items ? value.items : data.items;
-    return (
-      <ul className="blog-list">
-        {valueItems.map((blog, index) => (
-          <li key={index} className="blog-list-item">
-            <Link
-              href={`${params.blogs}/${getEndpoint(blog["@id"])}`}
-              legacyBehavior>
-              <a>{blog.title}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    );
-  };
+  if (!value) {
+    setValue(data);
+  }
 
   if (!data) {
     return notFound();
   } else {
     return (
-      <div className="home">
-        <h1 className="home-title">
+      <div className="blog">
+        <h1 className="blog-title">
           {value?.title ? value.title : data.title}
         </h1>
-        <ItemList />
+        <BlocksList data={value || data} />
       </div>
     );
   }
