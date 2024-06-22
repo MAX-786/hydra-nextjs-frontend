@@ -38,7 +38,7 @@ export default function Blog({ params }) {
         setValue(updatedData);
       }
     });
-  });
+  },[]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -52,7 +52,7 @@ export default function Blog({ params }) {
         <h1 className="blog-title">
           {value?.title ? value.title : data.title}
         </h1>
-        <BlocksList data={value || data} />
+        <BlocksList data={value} />
       </div>
     );
   } else {

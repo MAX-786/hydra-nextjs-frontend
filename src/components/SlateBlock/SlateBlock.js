@@ -6,7 +6,6 @@ import { withHistory } from "slate-history";
 
 const SlateBlock = ({ value }) => {
   const editor = React.useMemo(() => withReact(withHistory(createEditor())), []);
-
   const renderElement = ({ attributes, children, element }) => {
     if (element.type === "link") {
       return (
@@ -24,9 +23,8 @@ const SlateBlock = ({ value }) => {
     return <span {...attributes}>{children}</span>;
   };
 
-  const initialValue = value || [{ type: 'p', children: [{ text: '' }] }];
-
-
+  const initialValue = value || [{ type: "p", children: [{ text: "" }] }];
+  editor.children = initialValue;
   return (
     <Slate editor={editor} initialValue={initialValue}>
       <Editable renderElement={renderElement} renderLeaf={renderLeaf} readOnly />
