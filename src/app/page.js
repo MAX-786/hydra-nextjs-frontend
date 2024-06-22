@@ -37,7 +37,7 @@ export default function Home() {
         setValue(updatedData);
       }
     });
-  }, [data]);
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -54,7 +54,7 @@ export default function Home() {
   return (
     <div className="home">
       <h1 className="home-title">{value?.title ? value.title : data.title}</h1>
-      <BlocksList data={value || data} />
+      <BlocksList data={value} />
     </div>
   );
 }
