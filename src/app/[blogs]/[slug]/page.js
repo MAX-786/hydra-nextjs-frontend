@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
 import { useEffect, useState } from "react";
 import { fetchContent } from "@/utils/api";
+import BlocksList from "@/components/BlocksList";
 
 export default function Blog({ params }) {
   const [data, setData] = useState(null);
@@ -51,6 +52,7 @@ export default function Blog({ params }) {
         <h1 className="blog-title">
           {value?.title ? value.title : data.title}
         </h1>
+        <BlocksList data={value || data} />
       </div>
     );
   } else {
