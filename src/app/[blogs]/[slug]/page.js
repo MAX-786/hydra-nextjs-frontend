@@ -51,13 +51,6 @@ export default function Blog({ params }) {
         <h1 className="blog-title">
           {value?.title ? value.title : data.title}
         </h1>
-        <ul className="blog-list">
-          {value?.items.map((blog, index) => (
-            <li key={index} className="blog-list-item">
-              {blog.title}
-            </li>
-          ))}
-        </ul>
       </div>
     );
   } else {

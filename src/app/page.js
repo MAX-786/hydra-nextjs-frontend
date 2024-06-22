@@ -6,6 +6,7 @@ import { Breadcrumb } from "semantic-ui-react";
 import { getTokenFromCookie, onEditChange } from "@/utils/hydra";
 import { getEndpoint } from "@/utils/getEndpoints";
 import { fetchContent } from "@/utils/api";
+import SlateBlock from "@/components/SlateBlock";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -53,49 +54,16 @@ export default function Home() {
     return notFound();
   }
 
-  const renderBreadcrumb = () => (
-    <Breadcrumb>
-      <Breadcrumb.Section link>
-        <Link href="/">Home</Link>
-      </Breadcrumb.Section>
-      <Breadcrumb.Divider />
-      {value?.items.map(
-        (item, index) =>
-          item["@type"] === "Document" && (
-            <React.Fragment key={index}>
-              <Breadcrumb.Section link>
-                <Link href={`/${getEndpoint(item["@id"])}`}>{item.title}</Link>
-              </Breadcrumb.Section>
-              {index < value.items.length - 1 && <Breadcrumb.Divider />}
-            </React.Fragment>
-          )
-      )}
-    </Breadcrumb>
-  );
-
   return (
     <div className="home">
       <h1 className="home-title">{value?.title ? value.title : data.title}</h1>
       <ul className="blog-list">
-        {value?.items.map((blog, index) => {
-          if (blog["@type"] === "Document") {
-            return (
-              <li key={index} className="blog-list-item">
-                <Link href={`/${getEndpoint(blog["@id"])}`} legacyBehavior>
-                  <a>{blog.title}</a>
-                </Link>
-              </li>
-            );
-          }
-        })}
         {value?.blocks_layout.items.map((id, index) => {
           if (value.blocks[id]["@type"] === "slate") {
-            const slateValue = data.blocks[id].value;
+            const slateValue = value.blocks[id].value;
             return (
               <li key={id} className="blog-list-item" data-block-uid={`${id}`}>
-                <pre className="pre-block">
-                  {JSON.stringify(slateValue, null, 2)}
-                </pre>
+                <SlateBlock value={slateValue} />
               </li>
             );
           } else if (value.blocks[id]["@type"] === "image") {
