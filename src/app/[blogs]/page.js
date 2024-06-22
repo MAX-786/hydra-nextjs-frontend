@@ -46,23 +46,6 @@ export default function Home({ params }) {
     setValue(data);
   }
 
-  const ItemList = () => {
-    const valueItems = value?.items ? value.items : data.items;
-    return (
-      <ul className="blog-list">
-        {valueItems.map((blog, index) => (
-          <li key={index} className="blog-list-item">
-            <Link
-              href={`${params.blogs}/${getEndpoint(blog["@id"])}`}
-              legacyBehavior>
-              <a>{blog.title}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
   if (!data) {
     return notFound();
   } else {
@@ -71,7 +54,7 @@ export default function Home({ params }) {
         <h1 className="blog-title">
           {value?.title ? value.title : data.title}
         </h1>
-        <ItemList />
+
       </div>
     );
   }
