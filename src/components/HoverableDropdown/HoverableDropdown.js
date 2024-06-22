@@ -10,6 +10,7 @@ const HoverableDropdown = ({ item, subItems }) => {
 
   const handleMouseEnter = () => setOpen(true);
   const handleMouseLeave = () => setTimeout(() => setOpen(false), 300);
+  const absoluteUrl = `${(new URL(window.location.href)).origin}/${extractEndpoints(item["@id"])}`;
 
   return (
     <Dropdown
@@ -20,7 +21,7 @@ const HoverableDropdown = ({ item, subItems }) => {
       onMouseLeave={handleMouseLeave}
     >
       <Dropdown.Menu>
-        <Dropdown.Item as={Link} href={`${extractEndpoints(item["@id"])}`}>
+        <Dropdown.Item as={Link} href={absoluteUrl}>
           {item.title}
         </Dropdown.Item>
         {subItems.map((subItem, index) => (

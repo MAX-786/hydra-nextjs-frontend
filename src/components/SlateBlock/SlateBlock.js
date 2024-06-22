@@ -24,7 +24,7 @@ const SlateBlock = ({ value }) => {
     return <span {...attributes}>{children}</span>;
   };
 
-  const initialValue = value || [{ type: 'paragraph', children: [{ text: '' }] }];
+  const initialValue = value || [{ type: 'p', children: [{ text: '' }] }];
 
 
   return (
