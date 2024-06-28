@@ -45,7 +45,7 @@ export default function Blog({ params }) {
   const token = url.searchParams.get("access_token");
   
   const client = ploneClient.initialize({
-    apiPath: "http://localhost:8080/Plone/", // Plone backend
+    apiPath: "https://hydra.pretagov.com/", // Plone backend
     token: token,
   });
 
@@ -60,7 +60,34 @@ export default function Blog({ params }) {
   )
 }
 ```
+Or alternatively you can use simpler fetch API to get the Data
 
+```js
+export async function fetchContent(apiPath, { token = null, path = '' } = {}) {
+    // Construct the full URL
+    const url = `${apiPath}/++api++/${path ? `${path}` : ''}`;
+  
+    // Set up the headers
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  
+    try {
+      const response = await fetch(url, { headers });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch content:', error);
+      throw error;
+    }
+  }
+  const token = url.searchParams.get("access_token");
+  const content = await fetchContent("https://hydra.pretagov.com/", { token, "/" });
+```
 #### Initiating Hydra Bridge for 2-way communication with Hydra
 
 ```js
