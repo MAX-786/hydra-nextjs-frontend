@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import SlateBlock from "@/components/SlateBlock";
 
@@ -14,9 +15,18 @@ const BlocksList = ({ data }) => {
           );
         } else if (data.blocks[id]["@type"] === "image") {
           const image_url = data.blocks[id].url;
+          console.log("tata", data.blocks[id]);
+          const size = data.blocks[id].size;
+          const align = data.blocks[id].align;
           return (
             <li key={id} className="blog-list-item" data-block-uid={`${id}`}>
-              <img src={image_url} alt="" width={100} height={100} />
+              <img
+                src={image_url}
+                className={`blog-list-item-img image-size-${size} image-align-${align}`}
+                alt=""
+                width={100}
+                height={100}
+              />
             </li>
           );
         }

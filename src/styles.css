@@ -30,7 +30,34 @@ body {
     padding: 15px;
     border-radius: 5px;
     transition: background-color 0.3s;
+    display: grid;
   }
+  .blog-list-item-img {
+    display: flex;
+  }
+  .blog-list-item-img.image-align-full {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .blog-list-item-img.image-align-center {
+    margin: auto;
+  }
+  .blog-list-item-img.image-align-right {
+    justify-self: flex-end;
+  }
+  .blog-list-item-img.image-size-s {
+    width: 100px;
+    height: 100px; 
+  }
+  .blog-list-item-img.image-size-m {
+    width: 250px;
+    height: auto; 
+  }
+  .blog-list-item-img.image-size-l {
+    width: 350px;
+    height: auto; 
+  }
+
   .pre-block {
     white-space: pre-wrap;
     word-wrap: break-word;
