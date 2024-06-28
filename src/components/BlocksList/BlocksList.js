@@ -15,7 +15,6 @@ const BlocksList = ({ data }) => {
           );
         } else if (data.blocks[id]["@type"] === "image") {
           const image_url = data.blocks[id].url;
-          console.log("tata", data.blocks[id]);
           const size = data.blocks[id].size;
           const align = data.blocks[id].align;
           return (
