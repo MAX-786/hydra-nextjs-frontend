@@ -50,14 +50,12 @@ class Bridge {
 
   onEditChange(callback) {
     this.realTimeDataHandler = (event) => {
-      if (event.origin === this.adminOrigin) {
-        if (event.data.type === "FORM") {
-          if (event.data.data) {
-            console.log("Received message from adminUI", event.data);
-            callback(event.data.data);
-          } else {
-            throw new Error("No form data has been sent from the adminUI");
-          }
+      if (event.data.type === "FORM") {
+        if (event.data.data) {
+          console.log("Received message from adminUI", event.data);
+          callback(event.data.data);
+        } else {
+          throw new Error("No form data has been sent from the adminUI");
         }
       }
     };
