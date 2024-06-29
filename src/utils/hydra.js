@@ -138,6 +138,7 @@ class Bridge {
     const dragButton = document.createElement("button");
     dragButton.className = "volto-hydra-drag-button";
     dragButton.innerHTML = dragSVG; // Use your drag SVG here
+    dragButton.disabled = true; // Disable drag button for now
 
     // Create the three-dot menu button
     const menuButton = document.createElement("button");
@@ -279,11 +280,13 @@ class Bridge {
         align-items: center;
         position: absolute;
         background: white;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        box-shadow: 3px 3px 10px rgb(0 0 0 / 53%);
         border-radius: 6px;
         z-index: 10;
         top: -45px;
         left: 0;
+        box-sizing: border-box;
+        width: 70px;
       }
       .volto-hydra-drag-button,
       .volto-hydra-menu-button {
@@ -294,33 +297,38 @@ class Bridge {
         margin: 0;
       }
       .volto-hydra-drag-button {
-        cursor: grab;
+        cursor: default;
+        background: #E4E8EC;
+        border-radius: 6px;
+        padding: 9px 6px;
       }
       .volto-hydra-dropdown-menu {
         display: none;
         position: absolute;
         top: 100%;
-        right: -100%;
+        right: -200%;
         background: white;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         z-index: 100;
         margin-top: -8px;
+        width: 180px;
+        box-sizing: border-box;
       }
       .volto-hydra-dropdown-menu.visible {
         display: block;
       }
       .volto-hydra-dropdown-item {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
-        padding: 0.5em 1em;
+        padding: 10px;
         cursor: pointer;
         transition: background 0.2s;
       }
       .volto-hydra-dropdown-item svg {
-        margin-right: 0.5em;
+        margin-right: 1em;
       }
       .volto-hydra-dropdown-item:hover {
         background: #f0f0f0;
@@ -328,7 +336,7 @@ class Bridge {
       .volto-hydra-divider {
         height: 1px;
         background: rgba(0, 0, 0, 0.1);
-        margin: 0.5em 1em;
+        margin: 0 1em;
       }
     `;
     document.head.appendChild(style);
