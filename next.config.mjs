@@ -13,7 +13,7 @@ const nextConfig = {
                 style-src 'self' 'unsafe-inline' *;
                 img-src 'self' data: *;
                 connect-src 'self' *;
-                frame-ancestors 'self' http://localhost:3000;
+                frame-ancestors 'self' https://hydra.pretagov.com/;
               `.replace(/\s{2,}/g, ' ').trim(),
             },
             {
