@@ -50,12 +50,13 @@ class Bridge {
 
   onEditChange(callback) {
     this.realTimeDataHandler = (event) => {
-      if (event.data.type === "FORM") {
-        if (event.data.data) {
-          console.log("Received message from adminUI", event.data);
-          callback(event.data.data);
-        } else {
-          throw new Error("No form data has been sent from the adminUI");
+      if (event.data.type === "FORM_DATA") {
+        if (event.origin === this.adminOrigin) {
+          if (event.data.data) {
+            callback(event.data.data);
+          } else {
+            throw new Error("No form data has been sent from the adminUI");
+          }
         }
       }
     };
@@ -277,6 +278,7 @@ class Bridge {
       .volto-hydra-quantaToolbar {
         display: flex;
         align-items: center;
+        justify-content: center;
         position: absolute;
         background: white;
         box-shadow: 3px 3px 10px rgb(0 0 0 / 53%);
@@ -286,6 +288,7 @@ class Bridge {
         left: 0;
         box-sizing: border-box;
         width: 70px;
+        height: 40px;
       }
       .volto-hydra-drag-button,
       .volto-hydra-menu-button {
@@ -300,6 +303,8 @@ class Bridge {
         background: #E4E8EC;
         border-radius: 6px;
         padding: 9px 6px;
+        height: 40px;
+        display: flex;
       }
       .volto-hydra-dropdown-menu {
         display: none;
@@ -314,6 +319,7 @@ class Bridge {
         margin-top: -8px;
         width: 180px;
         box-sizing: border-box;
+        height: 80px;
       }
       .volto-hydra-dropdown-menu.visible {
         display: block;
@@ -325,6 +331,11 @@ class Bridge {
         padding: 10px;
         cursor: pointer;
         transition: background 0.2s;
+        height: 40px;
+      }
+      .volto-hydra-dropdown-text {
+        font-size: 15px;
+        font-weight: 500;
       }
       .volto-hydra-dropdown-item svg {
         margin-right: 1em;
