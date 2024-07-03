@@ -409,12 +409,11 @@ export function getTokenFromCookie() {
  * Enable the frontend to listen for changes in the admin and call the callback with updated data
  * @param {*} callback - this will be called with the updated data
  */
-export function onEditChange(callback, adminOrigin) {
-    if (!bridgeInstance) {
-      bridgeInstance = new Bridge(adminOrigin);
-    }
+export function onEditChange(callback) {
+  if (bridgeInstance) {
     bridgeInstance.onEditChange(callback);
   }
+}
 
 // Make initBridge available globally
 if (typeof window !== "undefined") {

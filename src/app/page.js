@@ -1,11 +1,12 @@
 "use client";
 import { notFound } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { getTokenFromCookie, onEditChange } from "#utils/hydra";
+import { getTokenFromCookie, initBridge } from "#utils/hydra";
 import { fetchContent } from "#utils/api";
 import BlocksList from "@/components/BlocksList";
 
 export default function Home() {
+  const brige = initBridge("https://hydra.pretagov.com");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,12 +33,12 @@ export default function Home() {
   const [value, setValue] = useState(data);
 
   useEffect(() => {
-    onEditChange((updatedData) => {
+    brige.onEditChange((updatedData) => {
       if (updatedData) {
         setValue(updatedData);
       }
     });
-  }, []);
+  }, [brige]);
 
   if (loading) {
     return <div>Loading...</div>;
