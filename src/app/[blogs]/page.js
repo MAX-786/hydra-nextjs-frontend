@@ -1,9 +1,9 @@
 "use client";
 import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
-import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
-import { fetchContent } from "@/utils/api";
+import { onEditChange, getTokenFromCookie } from "#utils/hydra";
 import BlocksList from "@/components/BlocksList";
+import { fetchContent } from '#utils/api';
 
 export default function Home({ params }) {
   const [data, setData] = useState(null);

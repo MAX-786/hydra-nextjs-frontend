@@ -1,10 +1,10 @@
 "use client";
 import { notFound } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { onEditChange, getTokenFromCookie } from "@/utils/hydra";
+import { onEditChange, getTokenFromCookie } from "#utils/hydra";
 import { useEffect, useState } from "react";
-import { fetchContent } from "@/utils/api";
 import BlocksList from "@/components/BlocksList";
+import { fetchContent } from '#utils/api';
 
 export default function Blog({ params }) {
   const [data, setData] = useState(null);
