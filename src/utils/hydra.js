@@ -11,7 +11,8 @@ class Bridge {
     this.deleteButton = null;
     this.clickOnBtn = false;
     this.quantaToolbar = null;
-    this.currentPathname = typeof window !== "undefined" ? window.location.pathname : null;
+    this.currentPathname =
+      typeof window !== "undefined" ? window.location.pathname : null;
     this.init();
   }
 
@@ -24,8 +25,10 @@ class Bridge {
       // Handle URL changes generically (no chromium-specific code here)
       this.navigationHandler = (e) => {
         const newPathname = new URL(e.destination.url).pathname;
-        if (newPathname !== this.currentPathname || this.currentPathname === null) {
-          console.log("URL changed to", newPathname);
+        if (
+          newPathname !== this.currentPathname ||
+          this.currentPathname === null
+        ) {
           this.currentUrl = newPathname;
           window.parent.postMessage(
             { type: "URL_CHANGE", url: e.destination.url },
@@ -221,6 +224,22 @@ class Bridge {
     window.addEventListener("message", this.messageHandler);
   }
 
+  /**
+   * Checks if an element is visible in the viewport
+   * @param {} el
+   * @param {} partiallyVisible
+   * @returns
+   */
+  elementIsVisibleInViewport(el, partiallyVisible = false) {
+    const { top, left, bottom, right } = el.getBoundingClientRect();
+    const { innerHeight, innerWidth } = window;
+    return partiallyVisible
+      ? ((top > 0 && top < innerHeight) ||
+          (bottom > 0 && bottom < innerHeight)) &&
+          ((left > 0 && left < innerWidth) || (right > 0 && right < innerWidth))
+      : top >= 0 && left >= 0 && bottom <= innerHeight && right <= innerWidth;
+  }
+
   observeForBlock(uid) {
     const observer = new MutationObserver((mutationsList, observer) => {
       for (const mutation of mutationsList) {
@@ -230,6 +249,8 @@ class Bridge {
           );
           if (blockElement) {
             this.selectBlock(blockElement);
+            !this.elementIsVisibleInViewport(blockElement, true) &&
+              blockElement.scrollIntoView({ behavior: "smooth" });
             observer.disconnect();
             break;
           }
