@@ -11,7 +11,7 @@ class Bridge {
     this.deleteButton = null;
     this.clickOnBtn = false;
     this.quantaToolbar = null;
-    this.currentPathname = window.location.pathname;
+    this.currentPathname = typeof window !== "undefined" ? window.location.pathname : null;
     this.init();
   }
 
@@ -24,7 +24,7 @@ class Bridge {
       // Handle URL changes generically (no chromium-specific code here)
       this.navigationHandler = (e) => {
         const newPathname = new URL(e.destination.url).pathname;
-        if (newPathname !== this.currentPathname) {
+        if (newPathname !== this.currentPathname || this.currentPathname === null) {
           console.log("URL changed to", newPathname);
           this.currentUrl = newPathname;
           window.parent.postMessage(
