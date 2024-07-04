@@ -15,7 +15,7 @@ const Menu = () => {
       try {
         const apiPath = "https://hydra.pretagov.com";
         const content = await fetchContent(apiPath, { token });
-        setMenuItems(content.items || []);
+        setMenuItems(content?.items || []);
       } catch (error) {
         console.error(error);
       } finally {

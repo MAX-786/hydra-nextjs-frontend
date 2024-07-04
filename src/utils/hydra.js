@@ -11,6 +11,7 @@ class Bridge {
     this.deleteButton = null;
     this.clickOnBtn = false;
     this.quantaToolbar = null;
+    this.currentPathname = window.location.pathname;
     this.init();
   }
 
@@ -20,11 +21,17 @@ class Bridge {
     }
 
     if (window.self !== window.top) {
-      this.navigationHandler = (event) => {
-        window.parent.postMessage(
-          { type: "URL_CHANGE", url: event.destination.url },
-          this.adminOrigin
-        );
+      // Handle URL changes generically (no chromium-specific code here)
+      this.navigationHandler = (e) => {
+        const newPathname = new URL(e.destination.url).pathname;
+        if (newPathname !== this.currentPathname) {
+          console.log("URL changed to", newPathname);
+          this.currentUrl = newPathname;
+          window.parent.postMessage(
+            { type: "URL_CHANGE", url: e.destination.url },
+            this.adminOrigin
+          );
+        }
       };
 
       // Ensure we don't add multiple listeners
