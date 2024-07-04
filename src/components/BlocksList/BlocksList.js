@@ -13,7 +13,7 @@ const BlocksList = ({ data }) => {
             </li>
           );
         } else if (data.blocks[id]["@type"] === "image") {
-          const image_url = data.blocks[id].url;
+          const image_url = data.blocks[id]?.image_scales ? `${data.blocks[id].url}/++api++/${data.blocks[id]?.image_scales.image[0].download}` : data.blocks[id].url;
           return (
             <li key={id} className="blog-list-item" data-block-uid={`${id}`}>
               <img src={image_url} alt="" width={100} height={100} />
