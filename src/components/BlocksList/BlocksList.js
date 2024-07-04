@@ -14,7 +14,7 @@ const BlocksList = ({ data }) => {
             </li>
           );
         } else if (data.blocks[id]["@type"] === "image") {
-          const image_url = data.blocks[id].url;
+          const image_url = data.blocks[id]?.image_scales ? `${data.blocks[id].url}/++api++/${data.blocks[id]?.image_scales.image[0].download}` : data.blocks[id].url;
           const size = data.blocks[id].size;
           const align = data.blocks[id].align;
           return (
