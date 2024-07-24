@@ -9,26 +9,32 @@ const SlateBlock = ({ value }) => {
   const renderElement = ({ attributes, children, element }) => {
     if (element.type === "link") {
       return (
-        <a href={element.data.url} {...attributes}>
+        <a href={element.data.url} {...attributes} data-hydra-node={`${element?.nodeId}`}>
           {children}
         </a>
       );
     }
-
+    
     const Tag = element.type;
-    return <Tag {...attributes}>{children}</Tag>;
+    return <Tag {...attributes} data-hydra-node={`${element?.nodeId}`}>{children}</Tag>;
   };
-
+  
   const renderLeaf = ({ attributes, children }) => {
-    return <span {...attributes}>{children}</span>;
+    return <span {...attributes} data-hydra-node={`${children.props.leaf?.nodeId}`}>{children}</span>;
   };
 
   const initialValue = value || [{ type: "p", children: [{ text: "" }] }];
   editor.children = initialValue;
   return (
-    <Slate editor={editor} initialValue={initialValue}>
-      <Editable renderElement={renderElement} renderLeaf={renderLeaf} readOnly />
-    </Slate>
+    <div data-editable-field="value" >
+      <Slate editor={editor} initialValue={initialValue}>
+        <Editable
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          readOnly
+        />
+      </Slate>
+    </div>
   );
 };
 

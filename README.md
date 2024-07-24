@@ -3,7 +3,7 @@
 This provides instructions on integrating your frontend built with Next.js into the Volto Hydra decoupled editor for headless Plone.
 Follow these steps to set up and run your frontend with Volto Hydra.
 
-***Note:*** This example frontend uses already deployed [Volto Hydra Demo](https://hydra.pretagov.com/).
+***Note:*** This example frontend uses already deployed [Volto Hydra Demo](http://localhost:8080/Plone/).
 You can also set up your own local instance of Volto Hydra by following [this guide](https://github.com/collective/volto-hydra/?tab=readme-ov-file#test-your-frontend).
 
 ### Running the application
@@ -20,7 +20,7 @@ For more information on deployment, Follow [vercel guide](https://vercel.com/doc
 
 ### Editing your content using Volto Hydra
 
-Once your frontend is deployed you can visit [the Demo site](https://hydra.pretagov.com/) or the local instance of Volto Hydra, login with demo username & password (mentioned in login page) and paste your frontend url in the adminUI (Volto Hydra).
+Once your frontend is deployed you can visit [the Demo site](http://localhost:8080/Plone/) or the local instance of Volto Hydra, login with demo username & password (mentioned in login page) and paste your frontend url in the adminUI (Volto Hydra).
 
 Now, you can access private content and start editing!
 
@@ -45,7 +45,7 @@ export default function Blog({ params }) {
   const token = url.searchParams.get("access_token");
   
   const client = ploneClient.initialize({
-    apiPath: "https://hydra.pretagov.com/", // Plone backend
+    apiPath: "http://localhost:8080/Plone/", // Plone backend
     token: token,
   });
 
@@ -60,13 +60,40 @@ export default function Blog({ params }) {
   )
 }
 ```
+Or alternatively you can use simpler fetch API to get the Data
 
+```js
+export async function fetchContent(apiPath, { token = null, path = '' } = {}) {
+    // Construct the full URL
+    const url = `${apiPath}/++api++/${path ? `${path}` : ''}`;
+  
+    // Set up the headers
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  
+    try {
+      const response = await fetch(url, { headers });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch content:', error);
+      throw error;
+    }
+  }
+  const token = url.searchParams.get("access_token");
+  const content = await fetchContent("http://localhost:8080/Plone/", { token, "/" });
+```
 #### Initiating Hydra Bridge for 2-way communication with Hydra
 
 ```js
   // In Layout.js
   import { initBridge } from './hydra.js';
-  initBridge("https://hydra.pretagov.com");
+  initBridge("http://localhost:8080/Plone");
 ```
 
 #### Enabling Click on Blocks

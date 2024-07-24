@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Menu as SemanticMenu, Dropdown } from "semantic-ui-react";
+import { Menu as SemanticMenu } from "semantic-ui-react";
 import { getTokenFromCookie } from "#utils/hydra";
 import Link from "next/link";
 import RecursiveMenuItem from "@/components/RecursiveMenuItem";
@@ -13,7 +13,7 @@ const Menu = () => {
   useEffect(() => {
     async function getData(token = null) {
       try {
-        const apiPath = "https://hydra.pretagov.com";
+        const apiPath = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
         const content = await fetchContent(apiPath, { token });
         setMenuItems(content?.items || []);
       } catch (error) {
