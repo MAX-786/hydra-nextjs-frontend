@@ -36,14 +36,21 @@ class Bridge {
         const newUrl = new URL(e.destination.url);
         if (
           this.currentUrl === null ||
+          newUrl.hash !== this.currentUrl.hash ||
           (this.currentUrl.pathname !== newUrl.pathname &&
             this.currentUrl.origin === newUrl.origin)
         ) {
-          this.currentUrl = newUrl;
           window.parent.postMessage(
-            { type: "URL_CHANGE", url: e.destination.url },
+            {
+              type: "URL_CHANGE",
+              url: newUrl.href,
+              isRoutingWithHash:
+                newUrl.hash !== this.currentUrl?.hash &&
+                newUrl.hash.startsWith("#!"),
+            },
             this.adminOrigin
           );
+          this.currentUrl = newUrl;
         } else if (
           this.currentUrl !== null &&
           this.currentUrl.origin !== newUrl.origin
@@ -156,11 +163,12 @@ class Bridge {
     const blockUid = blockElement.getAttribute("data-block-uid");
     this.selectedBlockUid = blockUid;
 
-    // Handle the selected block and its children
+    // Handle the selected block and its children for contenteditable
     handleElementAndChildren(blockElement);
 
     // Only when the block is a slate block, add nodeIds to the block's data
     this.observeBlockTextChanges(blockElement);
+    // if the block is a slate block, add nodeIds to the block's data
     if (this.formData && this.formData.blocks[blockUid]["@type"] === "slate") {
       this.formData.blocks[blockUid] = this.addNodeIds(
         this.formData.blocks[blockUid]
