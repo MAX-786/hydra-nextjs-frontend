@@ -42,8 +42,8 @@ const BlocksList = ({ data }) => {
             <li key={id} className="blog-list-item teaser-block" data-block-uid={`${id}`}>
               <div className="teaser-content">
                 {teaserHeadTitle && <h3 className="teaser-head-title">{teaserHeadTitle}</h3>}
-                {teaserTitle && <h2 className="teaser-title">{teaserTitle}</h2>}
-                {teaserDescription && <p data-editable-field="teaser" className="teaser-description">{teaserDescription}</p>}
+                {teaserTitle && <h2 className="teaser-title" data-editable-field="title">{teaserTitle}</h2>}
+                {teaserDescription && <p data-editable-field="description" className="teaser-description">{teaserDescription}</p>}
                 {teaserLink && (
                   <a href={teaserLink} className="teaser-link">
                     {teaserLinkTitle}
