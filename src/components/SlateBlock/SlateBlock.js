@@ -41,7 +41,7 @@ function serializeNode(node) {
   switch (node.type) {
     case "link":
       return (
-        <a key={uid} href={node.data.url} data-node-id={`${node?.nodeId}`}>
+        <a key={uid} href={node.data?.url} data-node-id={`${node?.nodeId}`}>
           {children}
         </a>
       );
