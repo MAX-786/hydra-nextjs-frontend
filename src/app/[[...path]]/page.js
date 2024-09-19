@@ -12,12 +12,12 @@ export default function Home({ params }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState(data);
-
+  
   useEffect(() => {
-    async function getData(token = null) {
-      try {
+      const path = params?.path !== undefined ? params.path.join("/") : "";
+      async function getData(token = null) {
+          try {
         const apiPath = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-        const path = `${params.path || ""}`;
         const content = await fetchContent(apiPath, { token, path });
         setData(content);
       } catch (error) {
