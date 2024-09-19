@@ -17,7 +17,7 @@ export default function Home({ params }) {
     async function getData(token = null) {
       try {
         const apiPath = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-        const path = `${params.path}`;
+        const path = `${params.path || ""}`;
         const content = await fetchContent(apiPath, { token, path });
         setData(content);
       } catch (error) {
