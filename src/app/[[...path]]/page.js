@@ -3,19 +3,21 @@ import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
 import { initBridge, getTokenFromCookie } from "#utils/hydra";
 import BlocksList from "@/components/BlocksList";
-import { fetchContent } from '#utils/api';
+import { fetchContent } from "#utils/api";
 
 export default function Home({ params }) {
-  const bridge = initBridge(process.env.NEXT_PUBLIC_ADMINUI_ORIGIN, {allowedBlocks: [ "slate", "image", "video", "teaser"]});
+  const bridge = initBridge(process.env.NEXT_PUBLIC_ADMINUI_ORIGIN, {
+    allowedBlocks: ["slate", "image", "video", "teaser"],
+  });
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState(data);
-
+  
   useEffect(() => {
-    async function getData(token = null) {
-      try {
+      const path = params?.path !== undefined ? params.path.join("/") : "";
+      async function getData(token = null) {
+          try {
         const apiPath = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-        const path = `${params.blogs}`;
         const content = await fetchContent(apiPath, { token, path });
         setData(content);
       } catch (error) {
@@ -29,7 +31,7 @@ export default function Home({ params }) {
     const tokenFromUrl =
       url.searchParams.get("access_token") || getTokenFromCookie();
     getData(tokenFromUrl);
-  }, [params.blogs]);
+  }, [params.path]);
 
   useEffect(() => {
     bridge.onEditChange((updatedData) => {
@@ -37,7 +39,7 @@ export default function Home({ params }) {
         setValue(updatedData);
       }
     });
-  },[bridge]);
+  }, [bridge]);
 
   if (loading) {
     return <div>Loading...</div>;
